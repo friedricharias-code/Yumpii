@@ -4,8 +4,8 @@ using UnityEngine.InputSystem;
 public class NewMonoBehaviourScript : MonoBehaviour
 {
     [Header("Movimiento")]
-    public float speed = 6f;                      // Velocidad base en suelo
-    [Range(0f, 1f)] public float airControl = 0.4f;  // Control en el aire
+    public float speed = 4f;                      // Velocidad base en suelo
+    [Range(0f, 1f)] public float airControl = 0.3f;  // Control en el aire
     public float acceleration = 12f;              // Qué tan rápido alcanza la vel. objetivo
 
     [Header("Salto")]
@@ -16,7 +16,8 @@ public class NewMonoBehaviourScript : MonoBehaviour
 
     [Header("Cámara")]
     public Transform cameraTransform;             // Arrastra la cámara aquí (o se autodescubre)
-    public float mouseSensitivity = 100f;
+    public float mouseSensitivityX = 80f;        // sensibilidad horizontal
+    public float mouseSensitivityY = 55f;         // sensibilidad vertical
     float xRotation = 0f;
 
     // Input buffers (PlayerInput → Invoke Unity Events)
@@ -33,7 +34,6 @@ public class NewMonoBehaviourScript : MonoBehaviour
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
 
-        // Muy importante: congela solo X y Z, deja libre Y para girar a los lados
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezeRotationY;
     }
 
@@ -96,7 +96,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
 
         // ---- Mirar/Girar ----
         // Yaw (izq/der) al cuerpo vía física
-        float mouseX = lookBuffer.x * mouseSensitivity * Time.fixedDeltaTime;
+        float mouseX = lookBuffer.x * mouseSensitivityX * Time.fixedDeltaTime;
         if (Mathf.Abs(mouseX) > 0f)
         {
             Quaternion yaw = Quaternion.Euler(0f, mouseX, 0f);
@@ -106,7 +106,7 @@ public class NewMonoBehaviourScript : MonoBehaviour
         // Pitch (arriba/abajo) solo en la cámara (no afecta rigidbody)
         if (cameraTransform != null)
         {
-            float mouseY = lookBuffer.y * mouseSensitivity * Time.fixedDeltaTime;
+            float mouseY = lookBuffer.y * mouseSensitivityY * Time.fixedDeltaTime;
             xRotation -= mouseY;
             xRotation = Mathf.Clamp(xRotation, -90f, 90f);
             cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
